@@ -52,6 +52,13 @@ same with gz downloaded from page
 		<builtin>: recipe for target 'tx.o' failed
 		make: *** [tx.o] Error 1
 
+it too interesting, can it be more clearer?:
+
+	tx -h roima 		       # send audio from default soundcard to the given host
+	rx                         # receive audio and play it
+
+help needed! in the meanwhile other methods..
+
 
 ## Test on Windows 10 Home WSL Ubuntu 20.04
 
@@ -134,12 +141,76 @@ trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
 Aborted (core dumped)
 ```
 
-it too interesting, can it be more clearer?:
 
-	tx -h roima 		       # send audio from default soundcard to the given host
-	rx                         # receive audio and play it
+## test debian 
 
-help needed! in the meanwhile other methods..
+Linux lassila 4.19.0-10-amd64 #1 SMP Debian 4.19.132-1 (2020-07-24) x86_64 GNU/Linux
+
+	sudo apt-get update
+	sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev 
+	git clone http://www.pogo.org.uk/~mark/trx.git
+	cd trx
+	make 
+	cc -MMD -Wall   -c -o rx.o rx.c
+	cc -MMD -Wall   -c -o device.o device.c
+	cc -MMD -Wall   -c -o sched.o sched.c
+	cc   rx.o device.o sched.o  -lasound -lopus -lortp -o rx
+	cc -MMD -Wall   -c -o tx.o tx.c
+	cc   tx.o device.o sched.o  -lasound -lopus -lortp -o tx
+	./tx -h 192.168.2.64
+	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+	sched_setscheduler: Operation not permitted
+
+running, good sing!
+
+
+## other side 
+
+Linux latindude 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+
+	1177  sudo apt-get update
+	1178  cd git/
+	1179  ls
+	1180  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev
+	1181  git clone http://www.pogo.org.uk/~mark/trx.git
+	1182  cd trx
+	1183  make 
+
+	cc -MMD -Wall   -c -o rx.o rx.c
+	rx.c: In function ‘create_rtp_recv’:
+	rx.c:58:6: warning: passing argument 3 of ‘rtp_session_signal_connect’ from incompatible pointer type [-Wincompatible-pointer-types]
+	      timestamp_jump, 0) != 0)
+	      ^~~~~~~~~~~~~~
+	In file included from /usr/include/ortp/ortp.h:68:0,
+	                 from rx.c:24:
+	/usr/include/ortp/rtpsession.h:271:17: note: expected ‘RtpCallback {aka void (*)(struct _RtpSession *)}’ but argument is of type ‘void (*)(RtpSession *, void *, void *, void *) {aka void (*)(struct _RtpSession *, void *, void *, void *)}’
+	 ORTP_PUBLIC int rtp_session_signal_connect(RtpSession *session,const char *signal_name, RtpCallback cb, unsigned long user_data);
+	                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+	cc -MMD -Wall   -c -o device.o device.c
+	cc -MMD -Wall   -c -o sched.o sched.c
+	cc   rx.o device.o sched.o  -lasound -lopus -lortp -o rx
+	cc -MMD -Wall   -c -o tx.o tx.c
+	tx.c: In function ‘main’:
+	tx.c:248:26: warning: passing argument 1 of ‘ortp_set_log_level_mask’ makes integer from pointer without a cast [-Wint-conversion]
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	                          ^~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: expected ‘int’ but argument is of type ‘void *’
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	tx.c:248:2: error: too many arguments to function ‘ortp_set_log_level_mask’
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	  ^~~~~~~~~~~~~~~~~~~~~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: declared here
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	<builtin>: recipe for target 'tx.o' failed
+	make: *** [tx.o] Error 1
+
+damn.. 
 
 -------
 
