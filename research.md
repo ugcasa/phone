@@ -157,6 +157,7 @@ Linux lassila 4.19.0-10-amd64 #1 SMP Debian 4.19.132-1 (2020-07-24) x86_64 GNU/L
 	cc   rx.o device.o sched.o  -lasound -lopus -lortp -o rx
 	cc -MMD -Wall   -c -o tx.o tx.c
 	cc   tx.o device.o sched.o  -lasound -lopus -lortp -o tx
+	
 	./tx -h 192.168.2.64
 	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
 	sched_setscheduler: Operation not permitted
@@ -171,10 +172,11 @@ Linux latindude 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x8
 	1177  sudo apt-get update
 	1178  cd git/
 	1179  ls
-	1180  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev
+	1180  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev 
 	1181  git clone http://www.pogo.org.uk/~mark/trx.git
 	1182  cd trx
 	1183  make 
+
 
 	cc -MMD -Wall   -c -o rx.o rx.c
 	rx.c: In function ‘create_rtp_recv’:
@@ -211,6 +213,64 @@ Linux latindude 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x8
 	make: *** [tx.o] Error 1
 
 damn.. 
+
+okay, last time upgraded 2019-10-17
+
+	sudo apt-get install wireguard 
+
+	casa@latindude:~/git/trx$ make
+	cc -MMD -Wall   -c -o tx.o tx.c
+	tx.c: In function ‘main’:
+	tx.c:248:26: warning: passing argument 1 of ‘ortp_set_log_level_mask’ makes integer from pointer without a cast [-Wint-conversion]
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	                          ^~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: expected ‘int’ but argument is of type ‘void *’
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	tx.c:248:2: error: too many arguments to function ‘ortp_set_log_level_mask’
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	  ^~~~~~~~~~~~~~~~~~~~~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: declared here
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	<builtin>: recipe for target 'tx.o' failed
+	make: *** [tx.o] Error 1
+
+hmm.. https://lists.gnu.org/archive/html/linphone-developers/2016-01/msg00041.html
+hmm.. https://osmocom.org/projects/osmotrx/wiki/OsmoTRX
+
+hmm.. notices that problem on compile is when tx is copiled.. rx is fine!
+	
+	casa@latindude:~/git/trx$ ls
+	COPYING  defaults.h  device.c  device.d  device.h  device.o  Makefile  notice.h  README  rx  rx.c  rx.d  rx.o  sched.c  sched.d  sched.h  sched.o  tx.c
+
+so continue testing. 
+
+  -p <port>   UDP port number (default 1350)
+
+firewalls, shut down, mic connected
+
+**sender**
+
+	./tx -h 192.168.2.64 -v1
+	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+	No protocol specified
+	xcb_connection_has_error() returned true
+
+
+**other end**
+
+	casa@latindude:~/git/trx$ ./rx
+	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+	sched_setscheduler: Operation not permitted
+
+me hearing my self
+
+passed
 
 -------
 
