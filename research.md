@@ -52,6 +52,88 @@ same with gz downloaded from page
 		<builtin>: recipe for target 'tx.o' failed
 		make: *** [tx.o] Error 1
 
+
+## Test on Windows 10 Home WSL Ubuntu 20.04
+
+```
+  824  git clone http://www.pogo.org.uk/~mark/trx.git
+  825  cd trx/
+  826  ls
+  827  less README
+  830  make
+  831  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev
+  832  sudo apt-get update
+  833  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev
+  834  sudo apt-get install libasound2-dev
+  835  make
+  836  sudo apt-get install  libopus-dev
+  837  make
+  838  sudo apt-get install  libortp-dev
+  839  make
+timo@Osiris:~/trx$ ./tx
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+2020-10-21 00:09:54:023 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:09:54:023 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+2020-10-21 00:09:54:024 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:09:54:024 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+Aborted (core dumped)
+timo@Osiris:~/trx$ ./rx
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+shared memfd open() failed: Function not implemented
+ALSA lib confmisc.c:767:(parse_card) cannot find card '0'
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_card_driver returned error: No such file or directory
+ALSA lib confmisc.c:392:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1246:(snd_func_refer) error evaluating name
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5220:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2642:(snd_pcm_open_noupdate) Unknown PCM default
+snd_pcm_open: No such file or directory
+timo@Osiris:~/trx$ ./rx
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+shared memfd open() failed: Function not implemented
+ALSA lib confmisc.c:767:(parse_card) cannot find card '0'
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_card_driver returned error: No such file or directory
+ALSA lib confmisc.c:392:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1246:(snd_func_refer) error evaluating name
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5220:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2642:(snd_pcm_open_noupdate) Unknown PCM default
+snd_pcm_open: No such file or directory
+timo@Osiris:~/trx$ ls
+COPYING   README      device.c  device.h  notice.h  rx.c  rx.o     sched.d  sched.o  tx.c  tx.o
+Makefile  defaults.h  device.d  device.o  rx        rx.d  sched.c  sched.h  tx       tx.d
+timo@Osiris:~/trx$
+timo@Osiris:~/trx$ ./rx
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+shared memfd open() failed: Function not implemented
+ALSA lib confmisc.c:767:(parse_card) cannot find card '0'
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_card_driver returned error: No such file or directory
+ALSA lib confmisc.c:392:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1246:(snd_func_refer) error evaluating name
+ALSA lib conf.c:4732:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5220:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2642:(snd_pcm_open_noupdate) Unknown PCM default
+snd_pcm_open: No such file or directory
+timo@Osiris:~/trx$ ./tx
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+2020-10-21 00:18:48:955 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:18:48:956 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+2020-10-21 00:18:48:956 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:18:48:956 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+Aborted (core dumped)
+timo@Osiris:~/trx$ sudo ./tx
+[sudo] password for timo:
+trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+2020-10-21 00:18:54:250 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:18:54:251 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+2020-10-21 00:18:54:251 ortp-error-Fail to set DSCP value on rtp socket: Operation not permitted
+2020-10-21 00:18:54:252 ortp-error-Fail to set DSCP value on rtcp socket: Operation not permitted
+Aborted (core dumped)
+```
+
 it too interesting, can it be more clearer?:
 
 	tx -h roima 		       # send audio from default soundcard to the given host
@@ -59,6 +141,7 @@ it too interesting, can it be more clearer?:
 
 help needed! in the meanwhile other methods..
 
+-------
 
 ## ipsec
 
