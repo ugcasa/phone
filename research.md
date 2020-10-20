@@ -52,19 +52,6 @@ same with gz downloaded from page
 		<builtin>: recipe for target 'tx.o' failed
 		make: *** [tx.o] Error 1
 
-it too interesting, can it be more clearer?:
-
-	tx -h roima 		       # send audio from default soundcard to the given host
-	rx                         # receive audio and play it
-
-help needed! in the meanwhile other methods..
-
-
-## ipsec
-
-https://en.wikipedia.org/wiki/IPsec
-hmm tunnelmode https://en.wikipedia.org/wiki/File:Ipsec-modes.svg
-wait, this is vpn, why not ssh then?
 
 ## Test on Windows 10 Home WSL Ubuntu 20.04
 
@@ -119,6 +106,21 @@ COPYING   README      device.c  device.h  notice.h  rx.c  rx.o     sched.d  sche
 Makefile  defaults.h  device.d  device.o  rx        rx.d  sched.c  sched.h  tx       tx.d
 timo@Osiris:~/trx$
 ```
+
+it too interesting, can it be more clearer?:
+
+	tx -h roima 		       # send audio from default soundcard to the given host
+	rx                         # receive audio and play it
+
+help needed! in the meanwhile other methods..
+
+-------
+
+## ipsec
+
+https://en.wikipedia.org/wiki/IPsec
+hmm tunnelmode https://en.wikipedia.org/wiki/File:Ipsec-modes.svg
+wait, this is vpn, why not ssh then?
 
 
 ## voice piped over ssh
