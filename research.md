@@ -153,6 +153,10 @@ https://en.wikipedia.org/wiki/IPsec
 hmm tunnelmode https://en.wikipedia.org/wiki/File:Ipsec-modes.svg
 wait, this is vpn, why not ssh then?
 
+## UDP data over socks proxy
+
+https://stackoverflow.com/questions/18428498/sending-udp-packets-through-socks-proxy
+
 
 ## voice piped over ssh
 
