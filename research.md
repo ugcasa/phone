@@ -1,6 +1,6 @@
-# gonzo linux phone - audio over shit
+# Project Phone
 
-How to send audio to another machine by over ssh or other methods
+How to send audio to another machine by over ssh or other methods.
 
 ## voip tech
 
