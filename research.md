@@ -422,40 +422,34 @@ Is possible: [Performing UDP tunneling through an SSH connection](https://www.qc
 
 How complicated it is to test? That guy got it working but did not
 
-	sudo apt install socat
-	socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:1351
-	ssh -L 1351:127.0.0.1:1350 -N -f casa@ujo.guru -p 2010
-	./tx -h 127.0.0.1 -v2
+.. now i some reason for connection failed: Connection refused
 
-socat output:
+Noice got is finally working
 
-	casa@electra:~/git/trx$ socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:1351
-	2020/10/21 18:27:17 socat[15327] E write(6, 0x55c5aad66fa0, 260): Broken pipe
-	2020/10/21 18:27:17 socat[15328] E write(6, 0x55c5aad66fa0, 260): Broken pipe
-	2020/10/21 18:27:17 socat[15329] E write(6, 0x55c5aad66fa0, 260): Broken pipe
-	2020/10/21 18:27:17 socat[15330] E write(6, 0x55c5aad66fa0, 260): Broken pipe
-	2020/10/21 18:27:17 socat[15331] E write(6, 0x55c5aad66fa0, 260): Broken pipe
-	2020/10/21 18:27:17 socat[15332] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+The "connection refused" error is coming from the ssh server on server.com when it tries to make the TCP connection to the target of the tunnel. "Connection refused" means that a connection attempt was rejected. The simplest explanation for the rejection is that, on server.com, there's nothing listening for connections on localhost port 8783. In other words, the server software that you were trying to tunnel to isn't running, or else it is running but it's not listening on that port.
 
+in deed.
 
+therefore starting orders is important
+
+**first receiver**
 
 	ssh roima
-	sudo apt install socat
-	socat tcp4-listen:1351,reuseaddr,fork UDP:127.0.0.1:1350
-	./rx -h 127.0.0.1 -v2
+	socat -h || sudo apt install socat
+	cd git/trx ; ./rx -h 127.0.0.1 p 1350 -v2
+	socat tcp4-listen:10001,reuseaddr,fork UDP:127.0.0.1:1350
 
-socat output:
+**then sender**
 
-	casa@roima:~$ socat tcp4-listen:1351,reuseaddr,fork UDP:127.0.0.1:1350
-	channel 3: open failed: connect failed: Connection refused
-	channel 3: open failed: connect failed: Connection refused
-	channel 3: open failed: connect failed: Connection refused
-	channel 3: open failed: connect failed: Connection refused
-
-Noice.. now i some reason for connection failed: Connection refused
+	socat -h || sudo apt install socat
+	cd git/trx ; ./tx -h 127.0.0.1 -p 1350
+	ssh -v -L 10000:127.0.0.1:10001 casa@ujo.guru -p 2010
+	socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:10000
 
 
-continue..
+latency is somewhere between 75 - 150 mS
+
+passed
 
 
 -------
