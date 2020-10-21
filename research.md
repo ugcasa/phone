@@ -142,22 +142,22 @@ Aborted (core dumped)
 ```
 
 
-## test debian 
+## test debian
 
 Linux lassila 4.19.0-10-amd64 #1 SMP Debian 4.19.132-1 (2020-07-24) x86_64 GNU/Linux
 
 	sudo apt-get update
-	sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev 
+	sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev
 	git clone http://www.pogo.org.uk/~mark/trx.git
 	cd trx
-	make 
+	make
 	cc -MMD -Wall   -c -o rx.o rx.c
 	cc -MMD -Wall   -c -o device.o device.c
 	cc -MMD -Wall   -c -o sched.o sched.c
 	cc   rx.o device.o sched.o  -lasound -lopus -lortp -o rx
 	cc -MMD -Wall   -c -o tx.o tx.c
 	cc   tx.o device.o sched.o  -lasound -lopus -lortp -o tx
-	
+
 	./tx -h 192.168.2.64
 	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
 	sched_setscheduler: Operation not permitted
@@ -165,17 +165,17 @@ Linux lassila 4.19.0-10-amd64 #1 SMP Debian 4.19.132-1 (2020-07-24) x86_64 GNU/L
 running, good sing!
 
 
-## other side 
+### other side
 
 Linux latindude 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
 
 	1177  sudo apt-get update
 	1178  cd git/
 	1179  ls
-	1180  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev 
+	1180  sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev
 	1181  git clone http://www.pogo.org.uk/~mark/trx.git
 	1182  cd trx
-	1183  make 
+	1183  make
 
 
 	cc -MMD -Wall   -c -o rx.o rx.c
@@ -212,11 +212,11 @@ Linux latindude 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x8
 	<builtin>: recipe for target 'tx.o' failed
 	make: *** [tx.o] Error 1
 
-damn.. 
+damn..
 
 okay, last time upgraded 2019-10-17
 
-	sudo apt-get install wireguard 
+	sudo apt-get install wireguard
 
 	casa@latindude:~/git/trx$ make
 	cc -MMD -Wall   -c -o tx.o tx.c
@@ -244,11 +244,11 @@ hmm.. https://lists.gnu.org/archive/html/linphone-developers/2016-01/msg00041.ht
 hmm.. https://osmocom.org/projects/osmotrx/wiki/OsmoTRX
 
 hmm.. notices that problem on compile is when tx is copiled.. rx is fine!
-	
+
 	casa@latindude:~/git/trx$ ls
 	COPYING  defaults.h  device.c  device.d  device.h  device.o  Makefile  notice.h  README  rx  rx.c  rx.d  rx.o  sched.c  sched.d  sched.h  sched.o  tx.c
 
-so continue testing. 
+so continue testing.
 
   -p <port>   UDP port number (default 1350)
 
@@ -262,6 +262,8 @@ firewalls, shut down, mic connected
 	xcb_connection_has_error() returned true
 
 
+	sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev wireguard
+
 **other end**
 
 	casa@latindude:~/git/trx$ ./rx
@@ -271,6 +273,142 @@ firewalls, shut down, mic connected
 me hearing my self
 
 passed
+
+
+## test with accesspoint and desktop at home
+
+
+### not compiling broblem fix
+
+	cc -MMD -Wall   -c -o rx.o rx.c
+	rx.c: In function ‘create_rtp_recv’:
+	rx.c:58:6: warning: passing argument 3 of ‘rtp_session_signal_connect’ from incompatible pointer type [-Wincompatible-pointer-types]
+	      timestamp_jump, 0) != 0)
+	      ^~~~~~~~~~~~~~
+	In file included from /usr/include/ortp/ortp.h:68:0,
+	                 from rx.c:24:
+	/usr/include/ortp/rtpsession.h:271:17: note: expected ‘RtpCallback {aka void (*)(struct _RtpSession *)}’ but argument is of type ‘void (*)(RtpSession *, void *, void *, void *) {aka void (*)(struct _RtpSession *, void *, void *, void *)}’
+	 ORTP_PUBLIC int rtp_session_signal_connect(RtpSession *session,const char *signal_name, RtpCallback cb, unsigned long user_data);
+	                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+	cc -MMD -Wall   -c -o device.o device.c
+	cc -MMD -Wall   -c -o sched.o sched.c
+	cc   rx.o device.o sched.o  -lasound -lopus -lortp -o rx
+	cc -MMD -Wall   -c -o tx.o tx.c
+	tx.c: In function ‘main’:
+	tx.c:248:26: warning: passing argument 1 of ‘ortp_set_log_level_mask’ makes integer from pointer without a cast [-Wint-conversion]
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	                          ^~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: expected ‘int’ but argument is of type ‘void *’
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	tx.c:248:2: error: too many arguments to function ‘ortp_set_log_level_mask’
+	  ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
+	  ^~~~~~~~~~~~~~~~~~~~~~~
+	In file included from /usr/include/ortp/ortp.h:67:0,
+	                 from tx.c:24:
+	/usr/include/ortp/logging.h:67:18: note: declared here
+	 ORTP_PUBLIC void ortp_set_log_level_mask(int levelmask);
+	                  ^~~~~~~~~~~~~~~~~~~~~~~
+	<builtin>: recipe for target 'tx.o' failed
+	make: *** [tx.o] Error 1
+
+hmm.. ortp 3.6.1-3build1
+
+ibortp-dev_3.6.1-2.5_amd64.deb
+
+seems that to many variables, new lib old main or other way around?
+
+```c
+246	ortp_init();
+247	ortp_scheduler_init();
+-248	ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);
++248	ortp_set_log_level_mask(ORTP_WARNING|ORTP_ERROR);
+249	session = create_rtp_send(addr, port);
+250	assert(session != NULL);
+```
+Compiles.
+
+one-liner to do change:
+	sed -i 's/ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);/ortp_set_log_level_mask(ORTP_WARNING|ORTP_ERROR);/g' tx.c
+
+passed
+
+### test 2.1 trough tunnel
+
+**Receiver**
+
+Linux roima 4.15.0-121-generic #123-Ubuntu SMP Mon Oct 5 16:16:40 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+
+
+	sudo apt-get install -y libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev wireguard opus-tools
+	cd git
+	git clone http://www.pogo.org.uk/~mark/trx.git
+	cd trx
+	sed -i 's/ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);/ortp_set_log_level_mask(ORTP_WARNING|ORTP_ERROR);/g' tx.c
+	make
+	cc -MMD -Wall   -c -o tx.o tx.c
+	cc   tx.o device.o sched.o  -lasound -lopus -lortp -o tx
+
+	sudo ufw allow 1350
+	./rx
+	trx (C) Copyright 2020 Mark Hills <mark@xwax.org>
+	sched_setscheduler: Operation not permitted
+
+OK
+
+**sender**
+
+Linux electra 5.0.0-32-generic #34 18.04.2-Ubuntu SMP Thu Oct 10 10:36:02 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+	sudo apt-get install libasound2-dev libopus-dev libopus0 libortp-dev libopus-dev libortp-dev wireguard opus-tools
+	git clone http://www.pogo.org.uk/~mark/trx.git
+	cd trx
+	sed -i 's/ortp_set_log_level_mask(NULL, ORTP_WARNING|ORTP_ERROR);/ortp_set_log_level_mask(ORTP_WARNING|ORTP_ERROR);/g' tx.c
+	make
+	cc -MMD -Wall   -c -o tx.o tx.c
+	cc   tx.o device.o sched.o  -lasound -lopus -lortp -o tx
+
+	sudo ufw allow 1350
+	./tx -h 192.168.1.10
+
+too loud, nice kierto, but worky
+
+OK
+
+
+
+### tunnel
+
+dman how it was..
+
+tunnel
+
+	ssh -L 1350:127.0.0.1:1350 -p 2010 casa@ujo.guru
+
+hmm. is this now good or not? cannot remember anymore., =D
+
+sender
+
+	./tx -h 127.0.0.1 -v2
+	>>>>>>>>...
+
+receiver
+
+	./rx -v2
+	########################################################################################################################################################################################################################################################################################################################################################################################################################################################Short write 1023
+	#ALSA lib pcm.c:8306:(snd_pcm_recover) underrun occurred
+	############Short write 1639
+	#ALSA lib pcm.c:8306:(snd_pcm_recover) underrun occurred
+	###########################################################################################################################################################################################################################################################################################################################################################################^C
+
+
+Receiver react when tunnel is killed by 'Short write'
+
+
+family needs my help now.. need to go
+
 
 -------
 
