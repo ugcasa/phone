@@ -406,8 +406,56 @@ receiver
 
 Receiver react when tunnel is killed by 'Short write'
 
+ssh -L 1350:127.0.0.1:1350 -N -f casa@ujo.guru -p 2010
 
-family needs my help now.. need to go
+
+eh.. shit.. of cause!.. (reason and solution moved to next chapter)
+
+
+## Solving tcp udp problem
+
+["SSH protocol run on top of TCP part of the TCP/IP stack. SIP or other type of voip generally runs on top of UDP protocol."](https://superuser.com/questions/699585/why-cant-ssh-tunneling-be-used-for-sip-voip-encryption)
+
+**ssh tun on tcp and seems that typically voip is on udp**
+
+Is possible: [Performing UDP tunneling through an SSH connection](https://www.qcnetwork.com/vince/doc/divers/udp_over_ssh_tunnel.html) but quite sure causes latency, thats why udp in first place. 
+
+How complicated it is to test? That guy got it working but did not
+
+	sudo apt install socat
+	socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:1351
+	ssh -L 1351:127.0.0.1:1350 -N -f casa@ujo.guru -p 2010
+	./tx -h 127.0.0.1 -v2
+
+socat output:
+
+	casa@electra:~/git/trx$ socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:1351
+	2020/10/21 18:27:17 socat[15327] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+	2020/10/21 18:27:17 socat[15328] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+	2020/10/21 18:27:17 socat[15329] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+	2020/10/21 18:27:17 socat[15330] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+	2020/10/21 18:27:17 socat[15331] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+	2020/10/21 18:27:17 socat[15332] E write(6, 0x55c5aad66fa0, 260): Broken pipe
+
+
+
+	ssh roima
+	sudo apt install socat
+	socat tcp4-listen:1351,reuseaddr,fork UDP:127.0.0.1:1350
+	./rx -h 127.0.0.1 -v2
+
+socat output:
+
+	casa@roima:~$ socat tcp4-listen:1351,reuseaddr,fork UDP:127.0.0.1:1350
+	channel 3: open failed: connect failed: Connection refused
+	channel 3: open failed: connect failed: Connection refused
+	channel 3: open failed: connect failed: Connection refused
+	channel 3: open failed: connect failed: Connection refused
+
+Noice.. now i some reason for connection failed: Connection refused
+
+
+continue..
 
 
 -------
