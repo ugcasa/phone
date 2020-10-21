@@ -550,7 +550,9 @@ arecord | ssh -C user@host padsp tee /dev/audio
 ```
 
 
-## Conclusion: good only for demo
+## Conclusion
+
+### piping over ssh good only for demo
 
 Too much delay for daily use, some bad quality issues and ripples.
 
@@ -583,5 +585,28 @@ Looked straight forward method to just pipe shit in, but valid only for demo or 
 all methods have problems in out application, continue to research
 Ask from casa for more detailed log of tests if interested (in notes 19.10.2020).
 
+
+
+### rtx + socat + ssh POC - passed
+
+voip uses udp, and tunneling only possible with tcp, so lets stuck udp to tcp tunnel with socat anywhere we like to. Latency tests needed top be done on mobile connection. Now latency is on decent level, somewhere between 75 and 150 mS recording the measurement done with android sound oscilloscope.
+
+install socat
+
+	sudo socat -h || sudo apt install socat
+
+run order is important.
+
+**first receiver**
+
+	cd git/trx ; ./rx -h 127.0.0.1 p 1350 -v2
+	socat tcp4-listen:10001,reuseaddr,fork UDP:127.0.0.1:1350
+
+**then sender**
+
+	socat -h || sudo apt install socat
+	cd git/trx ; ./tx -h 127.0.0.1 -p 1350
+	ssh -v -L 10000:127.0.0.1:10001 casa@ujo.guru -p 2010
+	socat udp4-listen:1350,reuseaddr,fork tcp:127.0.0.1:10000
 
 
