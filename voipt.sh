@@ -44,7 +44,8 @@ voipt.close_listener () {
 
 voipt.close_sender () {
     gnome-terminal -- pkill tx ; pkill socat
-    # todo tunnel kill
+    local pid=$(ps aux | grep ssh | grep "$sender_tcp_port" | tr -s " " | cut -f2 -d " ")
+    [[ $pid ]] && kill $pid
     return 0
 }
 
@@ -53,7 +54,6 @@ voipt.start_listener () {
     # assuming listener is remote and sender is local
     echo "listener rx"
     gnome-terminal -- ssh -p $listener_ssh_port $listener_user@$listener_address $HOME/git/trx/rx -h $sender_address -p $app_udb_port
-    sleep 1
     echo "listener tcp>udp"
     gnome-terminal -- ssh -p $listener_ssh_port $listener_user@$listener_address socat tcp4-listen:$listener_tcp_port,reuseaddr,fork UDP:$sender_address:$app_udb_port
     return 0
@@ -62,15 +62,11 @@ voipt.start_listener () {
 
 voipt.start_sender () {
     #run listener first**
-
     echo "sender tx"
     gnome-terminal -- /tmp/trx/tx -h $sender_address -p $app_udb_port
-    sleep 1
-
     echo "sender tunnel"
     gnome-terminal -- ssh -L $sender_tcp_port:$sender_address:$listener_tcp_port $listener_user@$listener_address -p $listener_ssh_port
-    sleep 1
-
+    sleep 3
     echo "sender udp>tcp"
     gnome-terminal -- socat udp4-listen:$app_udb_port,reuseaddr,fork tcp:$sender_address:$sender_tcp_port
     return 0
